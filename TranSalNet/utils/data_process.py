@@ -4,6 +4,8 @@ import numpy as np
 import os
 import torch
 from torch.utils.data import Dataset, DataLoader
+import torchvision.transforms.functional as TF
+import random
 
 
 def preprocess_img(img_dir, channels=3):
@@ -13,8 +15,6 @@ def preprocess_img(img_dir, channels=3):
     elif channels == 3:
         img = cv2.imread(img_dir)
 
-    #shape_r = 480
-    #shape_c = 640
     shape_r = 288
     shape_c = 384
     img_padded = np.ones((shape_r, shape_c, channels), dtype=np.uint8)
@@ -63,6 +63,41 @@ def postprocess_img(pred, org_dir):
 
     return img
 
+class MyTransform:
+
+    def __init__(self, p, angles, shape_r=288, shape_c=384, iftrain=False):
+        self.p = p
+        self.angles = angles
+        self.shape_r = shape_r
+        self.shape_c = shape_c
+        self.iftrain = iftrain
+
+    def rotate(self, image, map, angle):
+        return TF.rotate(image, angle), TF.rotate(map, angle)
+    
+    def horizontal_flip(self, image, map):
+        return TF.hflip(image), TF.hflip(map)
+
+    def __call__(self, image, map):
+        angle = 0
+
+        #normalize
+        image = TF.normalize(image, [0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+
+        if self.iftrain:
+            if random.random() < self.p:
+                image, map = self.horizontal_flip(image, map)
+
+            if random.random() < self.p:
+                angle = random.choice(self.angles)
+                image, map = self.rotate(image, map, angle)
+
+        #resize
+        image = TF.resize(image, (self.shape_r, self.shape_c))
+        map = TF.resize(map, (self.shape_r, self.shape_c))
+
+        return image, map
+
 
 class MyDataset(Dataset):
     """Load dataset."""
@@ -92,14 +127,14 @@ class MyDataset(Dataset):
         img = np.array(image) / 255.
         img = np.transpose(img, (2, 0, 1))
         img = torch.from_numpy(img)
-        # if self.transform:
-        #    img = self.transform(image)
 
         smap_path = self.saliency_dir + self.ids.iloc[idx, 1]
         saliency = Image.open(smap_path)
-
         smap = np.expand_dims(np.array(saliency) / 255., axis=0)
         smap = torch.from_numpy(smap)
+
+        if self.transform:
+            img, smap = self.transform(img, smap)
 
         sample = {'image': img, 'saliency': smap}
 
