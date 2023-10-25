@@ -91,9 +91,9 @@ class _Decoder(nn.Module):
         self.batchnorm5 = nn.BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
         self.batchnorm6 = nn.BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
 
-        self.TransEncoder1 = TransEncoder(in_channels=768, spatial_size=15*20, cfg=cfg1)
-        self.TransEncoder2 = TransEncoder(in_channels=384, spatial_size=30*40, cfg=cfg2)
-        self.TransEncoder3 = TransEncoder(in_channels=192, spatial_size=60*80, cfg=cfg3)
+        self.TransEncoder1 = TransEncoder(in_channels=768, spatial_size=9*12, cfg=cfg1)
+        self.TransEncoder2 = TransEncoder(in_channels=384, spatial_size=18*24, cfg=cfg2)
+        self.TransEncoder3 = TransEncoder(in_channels=192, spatial_size=36*48, cfg=cfg3)
 
         self.add = torch.add
         self.relu = nn.ReLU(True)
@@ -102,40 +102,38 @@ class _Decoder(nn.Module):
 
     def forward(self, x):
         x3, x4, x5 = x
-        # x3 = [4, 60, 80, 192], x4 = [4, 30, 40, 384], x5 = [4, 15, 20, 768]
+        # x3 = [4, 36, 48, 192], x4 = [4, 18, 24, 384], x5 = [4, 9, 12, 768]
         x3 = x3.permute(0,3,1,2)
         x4 = x4.permute(0,3,1,2)
         x5 = x5.permute(0,3,1,2)
-        # print(x3.shape, x4.shape, x5.shape)
+        # x3 = [4, 192, 36, 48], x4 = [4, 384, 18, 24], x5 = [4, 768, 9, 12]
         x5 = self.TransEncoder1(x5)
-        # x5 = [4, 768, 15, 20]
+        # x5 = [4, 768, 9, 12]
         x5 = self.conv1(x5)
         x5 = self.batchnorm1(x5)
         x5 = self.relu(x5)
         x5 = self.upsample(x5)
-        # x5 = [4, 768, 30, 40]
+        # x5 = [4, 768, 18, 24]
 
         x4_a = self.TransEncoder2(x4)
-        # x4_a = [4, 768, 30, 40]
+        # x4_a = [4, 768, 18, 24]
         x4 = x5 * x4_a
         x4 = self.relu(x4)
         x4 = self.conv2(x4)
-        # x4 = [4, 512, 30, 40]
         x4 = self.batchnorm2(x4)
         x4 = self.relu(x4)
         x4 = self.upsample(x4)
-        # x4 = [4, 512, 60, 80]
+        # x4 = [4, 512, 36, 48]
 
         x3_a = self.TransEncoder3(x3)
-        # x3_a = [4, 512, 60, 80]
+        # x3_a = [4, 512, 36, 48]
         x3 = x4 * x3_a
         x3 = self.relu(x3)
         x3 = self.conv3(x3)
-        # x3 = [4, 256, 60, 80]
         x3 = self.batchnorm3(x3)
         x3 = self.relu(x3)
         x3 = self.upsample(x3)
-        # x3 = [4, 256, 120, 160]
+        # x3 = [4, 256, 72, 96]
 
         x2 = self.conv4(x3)
         x2 = self.batchnorm4(x2)
