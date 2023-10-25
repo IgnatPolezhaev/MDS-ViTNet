@@ -8,15 +8,13 @@ import torchvision.transforms.functional as TF
 import random
 
 
-def preprocess_img(img_dir, channels=3):
+def preprocess_img(img_dir, shape_r=480, shape_c=640, channels=3):
 
     if channels == 1:
         img = cv2.imread(img_dir, 0)
     elif channels == 3:
         img = cv2.imread(img_dir)
 
-    shape_r = 288
-    shape_c = 384
     img_padded = np.ones((shape_r, shape_c, channels), dtype=np.uint8)
     if channels == 1:
         img_padded = np.zeros((shape_r, shape_c), dtype=np.uint8)
