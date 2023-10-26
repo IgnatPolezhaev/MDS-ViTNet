@@ -75,20 +75,50 @@ class MyTransform:
     
     def horizontal_flip(self, image, map):
         return TF.hflip(image), TF.hflip(map)
+    
+    def gaussian_blur(self, image, map):
+        return TF.gaussian_blur(image, 3), map
+    
+    def adjust_brightness(self, image, map):
+        brightness_factor = random.random() + 0.5
+        return TF.adjust_brightness(image,brightness_factor), map
+    
+    def adjust_contrast(self, image, map):
+        contrast_factor = random.random() + 0.5
+        return TF.adjust_contrast(image, contrast_factor), map
+    
+    def adjust_saturation(self, image, map):
+        saturation_factor = random.random() + 0.5
+        return TF.adjust_saturation(image, saturation_factor), map
+    
+    def adjust_sharpness(self, image, map):
+        sharpness_factor = random.random() + 0.5
+        return TF.adjust_sharpness(image, sharpness_factor), map
 
     def __call__(self, image, map):
         angle = 0
-
-        #normalize
-        image = TF.normalize(image, [0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 
         if self.iftrain:
             if random.random() < self.p:
                 image, map = self.horizontal_flip(image, map)
 
             if random.random() < self.p:
-                angle = random.choice(self.angles)
-                image, map = self.rotate(image, map, angle)
+                image, map = self.gaussian_blur(image, map)
+
+            if random.random() < self.p:
+                image, map = self.adjust_brightness(image, map)
+
+            if random.random() < self.p:
+                image, map = self.adjust_contrast(image, map)
+
+            if random.random() < self.p:
+                image, map = self.adjust_saturation(image, map)
+
+            if random.random() < self.p:
+                image, map = self.adjust_sharpness(image, map)
+
+        #normalize
+        image = TF.normalize(image, [0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 
         #resize
         image = TF.resize(image, (self.shape_r, self.shape_c))
