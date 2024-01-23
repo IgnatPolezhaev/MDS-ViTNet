@@ -59,6 +59,7 @@ python inference.py --img_path inputs/img_1.jpg
 The results will be saved in the `results` folder.
 
 For the best result quality, feed images to the model with an aspect ratio of 3:4.
+Inference takes up about 10 Gb of GPU
 
 ### Dataset preparation
 Download train/val/test data from [Google Drive](link). Unzip downloaded datasets files to `datasets`.
