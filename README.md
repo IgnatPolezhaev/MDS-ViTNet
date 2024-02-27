@@ -54,6 +54,11 @@ python inference.py --img_path inputs/img_1.jpg
 ```
 The results will be saved in the `results` folder.
 
+If you want to make a color predicted map added to the picture itself:
+```shell
+python inference.py --color True --img_path inputs/img_1.jpg
+```
+
 For the best result quality, feed images to the model with an aspect ratio of 3:4.
 
 Inference takes up about 10 Gb of GPU
