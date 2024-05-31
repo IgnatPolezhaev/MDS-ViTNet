@@ -1,6 +1,6 @@
 <h1>MDS-ViTNet: Improving saliency prediction for Eye-Tracking with Vision Transformer</h1>
 
-In this [paper]((https://arxiv.org/abs/2405.19501)), we present a novel methodology we call MDS-ViTNet (Multi Decoder Saliency by Vision Transformer Network) for enhancing visual saliency prediction or eye-tracking. Our trained model MDS-ViTNet achieves SoTA results across several benchmarks.
+In this [paper](https://arxiv.org/abs/2405.19501), we present a novel methodology we call MDS-ViTNet (Multi Decoder Saliency by Vision Transformer Network) for enhancing visual saliency prediction or eye-tracking. Our trained model MDS-ViTNet achieves SoTA results across several benchmarks.
   
 ## Results
 Example of model work on an image from SALICON.
