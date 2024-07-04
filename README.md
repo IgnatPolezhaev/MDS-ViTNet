@@ -37,7 +37,7 @@ Example of model work on an image from SALICON.
 
 ## Get Started
 ### Prepare pretrained models
-Download our pretrained models from [Google Drive](link) to the `weights` folder.
+Download our pretrained models from [Google Drive](https://drive.google.com/drive/folders/10tZL7oNfaRkBHHTeqjog0ZIJacrr2Ya0?usp=sharing) to the `weights` folder.
 
 The directory structure will be arranged condaas:
 ```
